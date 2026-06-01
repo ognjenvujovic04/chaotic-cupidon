@@ -35,8 +35,14 @@ namespace PersonClient
                     Console.WriteLine("✅ Press Enter to confirm or type /block username:");
                 });
 
+            connection.On<string>("RegistrationFailed", (errorMessage) =>
+            {
+                Console.WriteLine($"\n⚠️ {errorMessage}");
+                Environment.Exit(1);
+            });
+
             await connection.StartAsync();
-            Console.WriteLine($"\U0001F517 Connected as {username}.");
+            Console.WriteLine($"\U0001F517 Connecting as {username}.");
 
             await connection.InvokeAsync("InitSinglePerson", username, city, age, phoneNumber);
             Console.WriteLine("\U0001F498 Registered! Waiting for love letters...\n");

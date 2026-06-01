@@ -19,6 +19,7 @@ namespace CupidServer
             if (_persons.ContainsKey(username))
             {
                 Console.WriteLine($"⚠️ Username '{username}' already exists!");
+                await Clients.Caller.SendAsync("RegistrationFailed", $"Username '{username}' is already taken.");
                 return;
             }
 
