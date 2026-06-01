@@ -18,7 +18,7 @@ namespace CupidServer
         {
             if (_persons.ContainsKey(username))
             {
-                Console.WriteLine($"[SERVER] Username '{username}' already exists!");
+                Console.WriteLine($"⚠️ Username '{username}' already exists!");
                 return;
             }
 
@@ -35,7 +35,7 @@ namespace CupidServer
 
             await Groups.AddToGroupAsync(Context.ConnectionId, "Singles");
 
-            Console.WriteLine($"[SERVER] {username} ({city}, {age}) registered as single!");
+            Console.WriteLine($"\U0001F464 {username} ({city}, {age}) registered as single!");
         }
 
         public Task ConfirmReceived()
@@ -44,7 +44,7 @@ namespace CupidServer
             if (person != null)
             {
                 person.HasUnreadLetter = false;
-                Console.WriteLine($"[SERVER] {person.Username} confirmed letter received.");
+                Console.WriteLine($"✅ {person.Username} confirmed letter received.");
             }
 
             return Task.CompletedTask;
@@ -56,7 +56,7 @@ namespace CupidServer
             if (person != null && !person.BlockedUsers.Contains(usernameToBlock))
             {
                 person.BlockedUsers.Add(usernameToBlock);
-                Console.WriteLine($"[SERVER] {person.Username} blocked {usernameToBlock}.");
+                Console.WriteLine($"\U0001F6AB {person.Username} blocked {usernameToBlock}.");
             }
 
             return Task.CompletedTask;
@@ -68,7 +68,7 @@ namespace CupidServer
             if (person != null)
             {
                 _persons.Remove(person.Username);
-                Console.WriteLine($"[SERVER] {person.Username} disconnected and removed.");
+                Console.WriteLine($"\U0001F534 {person.Username} disconnected and removed.");
             }
 
             return base.OnDisconnectedAsync(exception);
@@ -80,7 +80,7 @@ namespace CupidServer
 
             if (persons.Count < 2)
             {
-                Console.WriteLine("[SERVER] Not enough persons to send letters.");
+                Console.WriteLine("⚠️ Not enough persons to send letters.");
                 return;
             }
 
@@ -116,7 +116,7 @@ namespace CupidServer
 
                 recipient.HasUnreadLetter = true;
 
-                Console.WriteLine($"[SERVER] Letter sent to {recipient.Username} from {bestMatch.Username} ({message})");
+                Console.WriteLine($"\U0001F48C Letter sent to {recipient.Username} from {bestMatch.Username} ({message})");
             }
         }
 

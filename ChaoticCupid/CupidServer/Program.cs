@@ -1,4 +1,7 @@
+using System.Text;
 using CupidServer;
+
+Console.OutputEncoding = Encoding.UTF8;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,4 +11,4 @@ var app = builder.Build();
 
 app.MapHub<CupidHub>("/cupidHub");
 
-app.Run();
+app.Run("http://localhost:5267");
