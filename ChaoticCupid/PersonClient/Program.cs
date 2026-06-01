@@ -41,8 +41,24 @@ namespace PersonClient
                 Environment.Exit(1);
             });
 
-            await connection.StartAsync();
-            Console.WriteLine($"\U0001F517 Connecting as {username}.");
+            connection.Closed += (ex) =>
+            {
+                Console.WriteLine("\n\U0001F534 Server disconnected.");
+                Environment.Exit(1);
+                return Task.CompletedTask;
+            };
+
+            try
+            {
+                await connection.StartAsync();
+            }
+            catch (HttpRequestException)
+            {
+                Console.WriteLine("⚠️ Could not connect to server. Make sure CupidServer is running.");
+                return;
+            }
+
+            Console.WriteLine($"\U0001F517 Connected as {username}.");
 
             await connection.InvokeAsync("InitSinglePerson", username, city, age, phoneNumber);
             Console.WriteLine("\U0001F498 Registered! Waiting for love letters...\n");
@@ -51,23 +67,31 @@ namespace PersonClient
             {
                 string? input = Console.ReadLine();
 
-                if (string.IsNullOrWhiteSpace(input))
+                try
                 {
-                    await connection.InvokeAsync("ConfirmReceived");
-                    Console.WriteLine("✅ Letter confirmed. Waiting for next one...\n");
+                    if (string.IsNullOrWhiteSpace(input))
+                    {
+                        await connection.InvokeAsync("ConfirmReceived");
+                        Console.WriteLine("✅ Letter confirmed. Waiting for next one...\n");
+                    }
+                    else if (input.StartsWith("/block "))
+                    {
+                        string userToBlock = input.Substring(7).Trim();
+                        if (!string.IsNullOrEmpty(userToBlock))
+                        {
+                            await connection.InvokeAsync("BlockUser", userToBlock);
+                            Console.WriteLine($"\U0001F6AB Blocked user '{userToBlock}'.");
+                        }
+                        else
+                        {
+                            Console.WriteLine("Usage: /block username");
+                        }
+                    }
                 }
-                else if (input.StartsWith("/block "))
+                catch (Exception)
                 {
-                    string userToBlock = input.Substring(7).Trim();
-                    if (!string.IsNullOrEmpty(userToBlock))
-                    {
-                        await connection.InvokeAsync("BlockUser", userToBlock);
-                        Console.WriteLine($"\U0001F6AB Blocked user '{userToBlock}'.");
-                    }
-                    else
-                    {
-                        Console.WriteLine("[PERSON] Usage: /block username");
-                    }
+                    Console.WriteLine("⚠️ Lost connection to server.");
+                    return;
                 }
             }
         }
